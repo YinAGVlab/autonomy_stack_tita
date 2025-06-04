@@ -251,7 +251,7 @@ int main(int argc, char** argv)
 
   auto subSpeed = nh->create_subscription<geometry_msgs::msg::TwistStamped>("/cmd_vel", 5, speedHandler);
 
-  auto pubVehicleOdom = nh->create_publisher<nav_msgs::msg::Odometry>("/state_estimation", 5);
+  auto pubVehicleOdom = nh->create_publisher<nav_msgs::msg::Odometry>("/tita4264886/chassis/odometry", 5);
   nav_msgs::msg::Odometry odomData;
   odomData.header.frame_id = "map";
   odomData.child_frame_id = "sensor";

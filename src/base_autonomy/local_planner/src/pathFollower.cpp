@@ -294,34 +294,33 @@ int main(int argc, char** argv)
   nh->get_parameter("inclThre", inclThre);
   nh->get_parameter("stopTime", stopTime);
   nh->get_parameter("noRotAtStop", noRotAtStop);
-  nh->get_parameter("noRotAtGoal", noRotAtGoal);
   nh->get_parameter("autonomyMode", autonomyMode);
   nh->get_parameter("autonomySpeed", autonomySpeed);
   nh->get_parameter("joyToSpeedDelay", joyToSpeedDelay);
 
-  auto subOdom = nh->create_subscription<nav_msgs::msg::Odometry>("/state_estimation", 5, odomHandler);
+  auto subOdom = nh->create_subscription<nav_msgs::msg::Odometry>("/tita4264886/chassis/odometry", 5, odomHandler);
 
   auto subPath = nh->create_subscription<nav_msgs::msg::Path>("/path", 5, pathHandler);
 
-  auto subJoystick = nh->create_subscription<sensor_msgs::msg::Joy>("/joy", 5, joystickHandler);
+  auto subJoystick = nh->create_subscription<sensor_msgs::msg::Joy>("/tita4264886/joy", 5, joystickHandler);
 
-  auto subSpeed = nh->create_subscription<std_msgs::msg::Float32>("/speed", 5, speedHandler);
+  auto subSpeed = nh->create_subscription<std_msgs::msg::Float32>("/tita4264886/robot_vel_32", 5, speedHandler);
 
   auto subStop = nh->create_subscription<std_msgs::msg::Int8>("/stop", 5, stopHandler);
 
   auto subSlowDown = nh->create_subscription<std_msgs::msg::Int8>("/slow_down", 5, slowDownHandler);
 
-  auto subRobotStatus = nh->create_subscription<motion_msgs::msg::RobotStatus>("diablo/sensor/Body_state", 5, robotStatusHandler);
+  auto subRobotStatus = nh->create_subscription<motion_msgs::msg::RobotStatus>("/tita4264886/perception/detector/angle_data", 5, robotStatusHandler);
 
-  auto subMotorStatus = nh->create_subscription<motion_msgs::msg::LegMotors>("diablo/sensor/Motors", 5, motorStatusHandler);
+  auto subMotorStatus = nh->create_subscription<motion_msgs::msg::LegMotors>("/tita4264886/locomotion/motors_status", 5, motorStatusHandler);
 
-  auto subIMU = nh->create_subscription<ception_msgs::msg::IMUEuler>("/diablo/sensor/ImuEuler", 5, imuHandler);
+  auto subIMU = nh->create_subscription<ception_msgs::msg::IMUEuler>("/tita4264886/imu_sensor_broadcaster/imu", 5, imuHandler);
 
-  auto pubSpeed = nh->create_publisher<geometry_msgs::msg::TwistStamped>("/cmd_vel", 5);
+  auto pubSpeed = nh->create_publisher<geometry_msgs::msg::TwistStamped>("/tita4264886/command/user/command", 5);
   geometry_msgs::msg::TwistStamped cmd_vel;
   cmd_vel.header.frame_id = "vehicle";
 
-  auto pubMotionCtrl = nh->create_publisher<motion_msgs::msg::MotionCtrl>("diablo/MotionCmd", 5);
+  auto pubMotionCtrl = nh->create_publisher<motion_msgs::msg::MotionCtrl>("/tita4264886/command/active/command", 5);
   motion_msgs::msg::MotionCtrl ctrl_msg;
 
   auto pubClearing = nh->create_publisher<std_msgs::msg::Float32>("/map_clearing", 5);

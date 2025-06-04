@@ -1,3 +1,5 @@
+> This repository is a specific implementation of [autonomy_stack_diablo_setup] (https://github.com/DDTRobot/autonomy_stack_diablo_setup) stereo vision camera on ** tita ** robot platform
+
 The repository contains the full autonomy stack for a system setup based on the [Direct Drive Tech's Diablo platform](https://shop.directdrive.com/products/diablo-world-s-first-direct-drive-self-balancing-wheeled-leg-robot). Sensors installed on the platform include a [Livox Mid-360 lidar](https://www.livoxtech.com/mid-360) and a [Ricoh Theta Z1 camera](https://us.ricoh-imaging.com/product/theta-z1), where the lidar is used by the autonomy stack. The autonomy stack contains a SLAM module, a route planner, an exploration planner, and a based autonomy system, where the base autonomy system further includes fundamental navigation modules for terrain traversability analysts, collision avoidance, and waypoint following. The system overall is capable of taking a goal point and navigating Diablo autonomously to the goal point as well as exploring an environment and building a map along the way. Alternatively, the system allows users to use a joystick controller to guide the navigation while the system itself is in charge of collision avoidance. We provide a simulation setup together with the real robot setup for users to take advantage of the system in various use cases. A tutorial about setting up the software and hardware is also provided to make it easier for users to replicate the system.
 
 <p align="center">
@@ -9,27 +11,35 @@ The repository contains the full autonomy stack for a system setup based on the 
 ### Base Autonomy
 
 The system is integrated with [Unity](https://unity.com) environment models for simulation. The repository has been tested in Ubuntu 22.04 with [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html). After installing ROS2 Humble, add 'source /opt/ros/humble/setup.bash' to the '~/.bashrc' file and `source ~/.bashrc` in the terminal to engage the installation.
+
 ```
 echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
+
 Install dependencies with the command lines below.
+
 ```
 sudo apt update
 sudo apt install libusb-dev ros-humble-desktop-full ros-humble-tf-transformations ros-humble-joy python3-colcon-common-extensions python-is-python3 python3-pip git
 pip install transforms3d pyyaml
 ```
+
 Clone the open-source repository.
+
 ```
 git clone https://github.com/jizhang-cmu/autonomy_stack_diablo_setup.git
 
 ```
+
 In a terminal, go to the folder, checkout the 'humble' branch, and compile. Note that this skips the SLAM module, Mid-360 lidar driver, and Theta Z1 camera driver. The three packages are not needed for simulation.
+
 ```
 cd autonomy_stack_diablo_setup
 git checkout humble
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-skip arise_slam_mid360 arise_slam_mid360_msgs livox_ros_driver2 receive_theta
 ```
+
 Download a [Unity environment model for Diablo setup](https://drive.google.com/drive/folders/1vAsyT_g1kLnexpgNawolVu3CO2NHYDB-?usp=sharing) and unzip the files to the 'src/base_autonomy/vehicle_simulator/mesh/unity' folder. The environment model files should look like below. For computers without a powerful GPU, please try the 'without_360_camera' version for a higher rendering rate.
 
 mesh/<br>
@@ -48,20 +58,22 @@ mesh/<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;render.jpg<br>
 
 In a terminal, go to the repository folder and launch the system.
+
 ```
 ./system_simulation.sh
 ```
-After seeing data showing up in RVIZ, users can use the 'Waypoint' button to set waypoints and navigate the vehicle around. Note that the waypoints are meant to be relatively close to the vehicle. Setting the waypoint too far can cause the vehicle to get stuck at a dead end. Users can also operate in *smart joystick mode* where the vehicle tries to follow joystick commands and also avoid collisions. To do this, users can use the control panel in RVIZ or a PS3/4 or Xbox controller with a USB or Bluetooth interface. When using the controller, users can also operate in *manual mode* without any collision avoidance. Detailed information about the operations in the three modes is below.
+
+After seeing data showing up in RVIZ, users can use the 'Waypoint' button to set waypoints and navigate the vehicle around. Note that the waypoints are meant to be relatively close to the vehicle. Setting the waypoint too far can cause the vehicle to get stuck at a dead end. Users can also operate in _smart joystick mode_ where the vehicle tries to follow joystick commands and also avoid collisions. To do this, users can use the control panel in RVIZ or a PS3/4 or Xbox controller with a USB or Bluetooth interface. When using the controller, users can also operate in _manual mode_ without any collision avoidance. Detailed information about the operations in the three modes is below.
 
 <p align="center">
   <img src="img/rviz_full.gif" alt="RVIZ" width="80%"/>
 </p>
 
-- *Smart joystick mode (default)*: The vehicle tries to follow joystick commands and also avoid collisions. Use the control panel in RVIZ or the right joystick on the controller to set the speed and yaw rate. If the system is in another mode, doing so will switch the system to *smart joystick mode*.
+- _Smart joystick mode (default)_: The vehicle tries to follow joystick commands and also avoid collisions. Use the control panel in RVIZ or the right joystick on the controller to set the speed and yaw rate. If the system is in another mode, doing so will switch the system to _smart joystick mode_.
 
-- *Waypoint mode*: The vehicle tries to follow waypoints and also avoid collisions. Use the 'Waypoint' button in RVIZ to set a waypoint by first clicking the button and then clicking where the waypoint is to be set around the vehicle. If the system is in another mode, clicking the 'Resume Navigation to Goal' button in RVIZ switches the system to *waypoint mode*. Or, users can hold the 'waypoint-mode' button on the controller and use the right joystick to set the speed. If only holding the 'waypoint-mode' button, the system will use the speed sent in ROS messages.
+- _Waypoint mode_: The vehicle tries to follow waypoints and also avoid collisions. Use the 'Waypoint' button in RVIZ to set a waypoint by first clicking the button and then clicking where the waypoint is to be set around the vehicle. If the system is in another mode, clicking the 'Resume Navigation to Goal' button in RVIZ switches the system to _waypoint mode_. Or, users can hold the 'waypoint-mode' button on the controller and use the right joystick to set the speed. If only holding the 'waypoint-mode' button, the system will use the speed sent in ROS messages.
 
-- *Manual mode*: The vehicle tries to follow joystick commands without any collision avoidance. Pressing the 'manual-mode' button on the controller switches the system to *manual mode*. Then, use the right joystick to set the speed and yaw rate.
+- _Manual mode_: The vehicle tries to follow joystick commands without any collision avoidance. Pressing the 'manual-mode' button on the controller switches the system to _manual mode_. Then, use the right joystick to set the speed and yaw rate.
 
 <p align="center">
   <img src="img/rviz_control_panel.jpg" alt="RVIZ Control Panel" width="30%"/>
@@ -70,6 +82,7 @@ After seeing data showing up in RVIZ, users can use the 'Waypoint' button to set
 </p>
 
 Alternatively, users can run a ROS node to send a series of waypoints. In another terminal, go to the folder and source the ROS workspace, then run the ROS node with the command lines below. The ROS node sends navigation boundary and speed as well. Click the 'Resume Navigation to Goal' button in RVIZ, and the vehicle will navigate inside the boundary following the waypoints. More information about the base autonomy system is available on the [Autonomous Exploration Development Environment](https://www.cmu-exploration.com) website.
+
 ```
 source install/setup.sh
 ros2 launch waypoint_example waypoint_example.launch
@@ -78,10 +91,12 @@ ros2 launch waypoint_example waypoint_example.launch
 ### Route Planner
 
 The route planner conducts planning in the global environment and guides the vehicle to navigate to a goal point. To launch the system with route planner, use the command line below.
+
 ```
 ./system_simulation_with_route_planner.sh
 ```
-Users can send a goal point with the 'Goalpoint' button in RVIZ. The vehicle will navigate to the goal and build a visibility graph (in cyan) along the way. Areas covered by the visibility graph become free space. When navigating in free space, the planner uses the built visibility graph, and when navigating in unknown space, the planner attempts to discover a way to the goal. By pressing the 'Reset Visibility Graph' button, the planner will reinitialize the visibility graph. By unchecking the 'Planning Attemptable' checkbox, the planner will first try to find a path through the free space. The path will show in green. If such a path does not exist, the planner will consider unknown space together. The path will show in blue. By unchecking the 'Update Visibility Graph' checkbox, the planner will stop updating the visibility graph. When navigating with the route planner, the base system operates in *waypoint mode*. Users can click in the black box on the control panel to switch to *smart joystick mode*, or press the buttons on a joystick controller to switch to *smart joystick mode* or *manual mode*. To resume route planner navigation, click the 'Resume Navigation to Goal' button in RVIZ or use the 'Goalpoint' button to set a new goalpoint. More information about the route planner is available on the [FAR Planner website](https://github.com/MichaelFYang/far_planner).
+
+Users can send a goal point with the 'Goalpoint' button in RVIZ. The vehicle will navigate to the goal and build a visibility graph (in cyan) along the way. Areas covered by the visibility graph become free space. When navigating in free space, the planner uses the built visibility graph, and when navigating in unknown space, the planner attempts to discover a way to the goal. By pressing the 'Reset Visibility Graph' button, the planner will reinitialize the visibility graph. By unchecking the 'Planning Attemptable' checkbox, the planner will first try to find a path through the free space. The path will show in green. If such a path does not exist, the planner will consider unknown space together. The path will show in blue. By unchecking the 'Update Visibility Graph' checkbox, the planner will stop updating the visibility graph. When navigating with the route planner, the base system operates in _waypoint mode_. Users can click in the black box on the control panel to switch to _smart joystick mode_, or press the buttons on a joystick controller to switch to _smart joystick mode_ or _manual mode_. To resume route planner navigation, click the 'Resume Navigation to Goal' button in RVIZ or use the 'Goalpoint' button to set a new goalpoint. More information about the route planner is available on the [FAR Planner website](https://github.com/MichaelFYang/far_planner).
 
 <p align="center">
   <img src="img/rviz_full_with_route_planner.gif" alt="RVIZ with Route Planner" width="80%"/>
@@ -90,10 +105,12 @@ Users can send a goal point with the 'Goalpoint' button in RVIZ. The vehicle wil
 ### Exploration Planner
 
 The exploration planner conducts planning in the global environment and guides the vehicle to cover the environment. To launch the system with exploration planner, use the command line below.
+
 ```
 ./system_simulation_with_exploration_planner.sh
 ```
-Click the 'Resume Navigation to Goal' button in RVIZ to start the exploration. Users can adjust the navigation boundary to constrain the areas to explore by updating the boundary polygon in the 'src/exploration_planner/tare_planner/data/boundary.ply' file. When navigating with the exploration planner, the base system operates in *waypoint mode*. Users can click in the black box on the control panel to switch to *smart joystick mode*, or press the buttons on a joystick controller to switch to *smart joystick mode* or *manual mode*. To resume exploration, click the 'Resume Navigation to Goal' button in RVIZ. Note that previously, due to usage of [OR-Tools](https://developers.google.com/optimization) library, the exploration_planner only supports AMD64 architecture. A recent upgrade to the library made it compatible with both AMD64 and ARM computers. On ARM computers, please download the corresponding [binary release](https://github.com/google/or-tools/releases) for the target platform, for example, [or-tools_arm64_debian-11_cpp_v9.8.3296.tar.gz](https://github.com/google/or-tools/releases/download/v9.8/or-tools_arm64_debian-11_cpp_v9.8.3296.tar.gz), extract it, and replace the 'include' and 'lib' folders under 'src/exploration_planner/tare_planner/or-tools'. More information about the exploration planner is available on the [TARE Planner website](https://github.com/caochao39/tare_planner).
+
+Click the 'Resume Navigation to Goal' button in RVIZ to start the exploration. Users can adjust the navigation boundary to constrain the areas to explore by updating the boundary polygon in the 'src/exploration*planner/tare_planner/data/boundary.ply' file. When navigating with the exploration planner, the base system operates in \_waypoint mode*. Users can click in the black box on the control panel to switch to _smart joystick mode_, or press the buttons on a joystick controller to switch to _smart joystick mode_ or _manual mode_. To resume exploration, click the 'Resume Navigation to Goal' button in RVIZ. Note that previously, due to usage of [OR-Tools](https://developers.google.com/optimization) library, the exploration_planner only supports AMD64 architecture. A recent upgrade to the library made it compatible with both AMD64 and ARM computers. On ARM computers, please download the corresponding [binary release](https://github.com/google/or-tools/releases) for the target platform, for example, [or-tools_arm64_debian-11_cpp_v9.8.3296.tar.gz](https://github.com/google/or-tools/releases/download/v9.8/or-tools_arm64_debian-11_cpp_v9.8.3296.tar.gz), extract it, and replace the 'include' and 'lib' folders under 'src/exploration_planner/tare_planner/or-tools'. More information about the exploration planner is available on the [TARE Planner website](https://github.com/caochao39/tare_planner).
 
 <p align="center">
   <img src="img/rviz_full_with_exploration_planner.gif" alt="RVIZ with Exploration Planner" width="80%"/>
@@ -239,7 +256,7 @@ Plug the camera into the processing computer with the USB-A to USB-C cable (use 
 gst-launch-1.0 -v thetauvcsrc ! h264parse ! decodebin ! autovideosink
 ```
 
-Now, compile the Theta Z1 camera driver. 
+Now, compile the Theta Z1 camera driver.
 
 ```
 cd autonomy_stack_diablo_setup
@@ -320,7 +337,7 @@ Power on the hardware including the sensors, processing computer, and Diablo. Ma
 ./system_real_robot.sh
 ```
 
-Now, flip the lower-right button on the built-in controller to the down position to release control. At this point, Diablo can be commanded by ROS messages from the system. Users can follow the same operations as in the simulation setup to navigate Diablo in the environment. Please refer to the Simulation Setup section for operating the system in the *smart joystick mode*, *waypoint mode*, and *manual mode* using a combination of the 'waypoint' button and control panel in RVIZ and the PS3 controller. Note that the system commands Diablo to drive only when it is in standing mode. During autonomous navigation, if it exits standing mode, e.g accidentally falling down, use the built-in controller to stand it up and then release control, the autonomous navigation will resume.
+Now, flip the lower-right button on the built-in controller to the down position to release control. At this point, Diablo can be commanded by ROS messages from the system. Users can follow the same operations as in the simulation setup to navigate Diablo in the environment. Please refer to the Simulation Setup section for operating the system in the _smart joystick mode_, _waypoint mode_, and _manual mode_ using a combination of the 'waypoint' button and control panel in RVIZ and the PS3 controller. Note that the system commands Diablo to drive only when it is in standing mode. During autonomous navigation, if it exits standing mode, e.g accidentally falling down, use the built-in controller to stand it up and then release control, the autonomous navigation will resume.
 
 <p align="center">
   <img src="img/collision_avoidance.gif" alt="Collision Avoidance" width="80%"/>
@@ -329,10 +346,13 @@ Now, flip the lower-right button on the built-in controller to the down position
 To launch the system with route planner or exploration planner, use the command lines below. Follow the same procedures as in the Simulation Setup section to operate the system.
 
 For route planner:
+
 ```
 ./system_real_robot_with_route_planner.sh
 ```
+
 For exploration planner:
+
 ```
 ./system_real_robot_with_exploration_planner.sh
 ```
@@ -355,14 +375,19 @@ ros2 bag record /imu/data /lidar/scan /camera/image -o 'bagfolder_path'
 To launch the system for bagfile processing, use of the command lines below.
 
 For base system:
+
 ```
 ./system_bagfile.sh
 ```
+
 For route planner:
+
 ```
 ./system_bagfile_with_route_planner.sh
 ```
+
 For exploration planner:
+
 ```
 ./system_bagfile_with_exploration_planner.sh
 ```
@@ -392,11 +417,11 @@ ros2 bag play 'bagfolder_path/bagfile_name.db3'
 
 - For the Theta Z1 camera, please connect it to a USB-A port on the processing computer via a USB-A to USB-C cable. The driver can have issues if connected to a USB-C port. Occasionally, if the camera is stuck in an erroneous mode with with blinking red light, hold the power button and Wifi/Bluetooth button together for a few seconds to force shut down. Then press the power button again to power it on.
 
-- For the Theta Z1 camera driver, in the 'src/utilities/receive_theta/launch/receive_theta.launch' file, the image top/bottom margin is set to 'TopBottonMargin = 160', cropping from 960 pixels at 180 degs to 640 pixels at 120 degs vertically. Set 'imageLatency' to adjust image message timestamps if needed. If using the driver on ARM computers, change line 65 in the 'src/utilities/receive_theta/src/receiveTheta.cpp' file to 'VideoCapture video("thetauvcsrc ! h264parse ! decodebin ! nvvidconv ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");'. On some computers, you may need to change the installation directory from '/usr/lib/x86_64-linux-gnu/gstreamer-1.0' to '/usr/lib/gstreamer-1.0' in the makefile of 'gstthetauvc'. The image framerate is set to 10Hz ('skipFrameNum = 2') in 'gstthetauvcsrc.c'. It can be set up to 30Hz. The image resolution is set to FHD (1920 * 960) by default in 'thetauvc.h'. It can be set to UHD (3840 * 1920). If changing these settings, please remake and reinstall 'gstthetauvc'.
+- For the Theta Z1 camera driver, in the 'src/utilities/receive*theta/launch/receive_theta.launch' file, the image top/bottom margin is set to 'TopBottonMargin = 160', cropping from 960 pixels at 180 degs to 640 pixels at 120 degs vertically. Set 'imageLatency' to adjust image message timestamps if needed. If using the driver on ARM computers, change line 65 in the 'src/utilities/receive_theta/src/receiveTheta.cpp' file to 'VideoCapture video("thetauvcsrc ! h264parse ! decodebin ! nvvidconv ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");'. On some computers, you may need to change the installation directory from '/usr/lib/x86_64-linux-gnu/gstreamer-1.0' to '/usr/lib/gstreamer-1.0' in the makefile of 'gstthetauvc'. The image framerate is set to 10Hz ('skipFrameNum = 2') in 'gstthetauvcsrc.c'. It can be set up to 30Hz. The image resolution is set to FHD (1920 * 960) by default in 'thetauvc.h'. It can be set to UHD (3840 \_ 1920). If changing these settings, please remake and reinstall 'gstthetauvc'.
 
 - The route planner and exploration planner are provided with indoor and outdoor configurations. To change the configuration, go to the 'src/base_autonomy/vehicle_simulator/launch' folder and find 'route_planner_config' in the 'system_unity_with_route_planner.launch', 'system_real_robot_with_route_planner.launch', and 'system_bagfile_with_route_planner.launch' files, and 'exploration_planner_config' in the 'system_unity_with_exploration_planner.launch', 'system_real_robot_with_exploration_planner.launch', and 'system_bagfile_with_exploration_planner.launch' files. Users can configure the settings for Unity simulation, real-robot deployment, and bagfile processing differently in the launch files. The default is set to indoor for both planners.
 
-- The speed is set in the 'src/base_autonomy/local_planner/launch/local_planner.launch' file. The 'maxSpeed' defines the maximum speed in all modes and 'autonomySpeed' defines the speed in *waypoint mode*. Please be extra cautious when increasing the speed.
+- The speed is set in the 'src/base*autonomy/local_planner/launch/local_planner.launch' file. The 'maxSpeed' defines the maximum speed in all modes and 'autonomySpeed' defines the speed in \_waypoint mode*. Please be extra cautious when increasing the speed.
 
 - In indoor environments, to avoid low obstacles, users can reduce 'obstacleHeightThre' in the 'src/base_autonomy/local_planner/launch/local_planner.launch' file from 0.15 to as small as 0.015 or 0.02. The vehicle will avoid obstacles at 2-2.5cm above ground. Please set the threshold higher (0.1-0.15) in outdoor environments.
 
@@ -405,19 +430,25 @@ ros2 bag play 'bagfolder_path/bagfile_name.db3'
 ## Extension - WiFi Transmission
 
 The extension wirelessly transmits data to a base station computer installed with Ubuntu 22.04 and [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html), allowing users to run advanced AI models on the base station computer with powerful GPUs, for example. The setup involves a high-speed WiFi router. The model tested is an [ASUS RT-AX55 WiFi router](https://www.amazon.com/ASUS-AX1800-WiFi-Router-RT-AX55/dp/B08J6CFM39). Configure the router and set up the subnet. We recommend using automatic IP and setting the subnet address to 10.1.1.x (please avoid the 192.168.1.x subnet as being used by the Mid-360 lidar, and do not connect the router to the internet). Connect the base station computer to the router with an Ethernet cable and the Diablo processing computer to the router over WiFi, both using 'Automatic (DHCP)'. Make sure both computers are on the same subnet and can ping each other. On the Diablo processing computer, use the command lines below to increase the message buffer size. Then, you can use `sysctl net.core.rmem_max` and `sysctl net.core.wmem_max` to check the buffer size.
+
 ```
 sudo sysctl -w net.core.rmem_max=67108864 net.core.rmem_default=67108864
 sudo sysctl -w net.core.wmem_max=67108864 net.core.wmem_default=67108864
 ```
+
 Start the Diablo system. On the base station computer, users should be able to list all the topics using `ros2 topic list`. In a terminal on the Diablo processing computer, go to the repository folder, source the ROS workspace, and launch the domain bridge. This shares a few topics to the base station computer domain (ROS_DOMAIN_ID=1).
+
 ```
 source install/setup.bash
 ros2 launch domain_bridge diablo_bridge.launch
 ```
+
 In a terminal on the base station computer, use `export ROS_DOMAIN_ID=1` followed by `ros2 topic list` to list the topics shared to the base station computer domain. Now, copy the 'base_station' folder in the repository to the base station computer. In a terminal, go to the folder and use the command line below to launch RVIZ and view data transmitted over the network.
+
 ```
 ./base_station.sh
 ```
+
 Users can set up AI models on the base station computer to process the transmitted data and send waypoints back to guide the navigation. When launching the AI model, please set `export ROS_DOMAIN_ID=1` in the terminal. Note that the data transmission sends compressed images to the base station computer. The images are then uncompressed in the 'base_station.sh' script. Please make sure to subscribe to the uncompressed images on the '/camera/image/transmitted' topic. Subscribing to the original images on the '/camera/image' topic can overload the network. If experiencing high image latency over the network, users can try reducing 'compQuality' in the 'src/utilities/receive_theta/launch/receive_theta.launch' file. If accessing internet on the base station computer at the same time, users can connect the base station computer to internet over WiFi and then in the wired network settings, under IPv4 tab, check "use this connection only for resources on its network".
 
 <p align="center">

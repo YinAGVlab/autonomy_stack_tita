@@ -40,7 +40,7 @@ void SensorCoveragePlanner3D::ReadParameters() {
                                        "/navigation_boundary");
   this->declare_parameter<std::string>("sub_nogo_boundary_topic_",
                                        "/nogo_boundary");
-  this->declare_parameter<std::string>("sub_joystick_topic_", "/joy");
+  this->declare_parameter<std::string>("sub_joystick_topic_", "/tita4264886/joy");
   this->declare_parameter<std::string>("sub_reset_waypoint_topic_",
                                        "/reset_waypoint");
   this->declare_parameter<std::string>("pub_exploration_finish_topic_",

@@ -25,7 +25,24 @@ def generate_launch_description():
   declare_vehicleX = DeclareLaunchArgument('vehicleX', default_value='0.0', description='')
   declare_vehicleY = DeclareLaunchArgument('vehicleY', default_value='0.0', description='')
   declare_checkTerrainConn = DeclareLaunchArgument('checkTerrainConn', default_value='true', description='')
-  
+
+  start_ekf_localization = IncludeLaunchDescription(
+      PythonLaunchDescriptionSource(os.path.join(
+          get_package_share_directory('robot_localization'), 'launch', 'ekf_tita.launch.py')
+    )
+  )
+
+  start_type_converter = IncludeLaunchDescription(
+    PythonLaunchDescriptionSource(os.path.join(
+      get_package_share_directory('type_converter'), 'launch', 'type_converter.launch.py')
+    )
+  )
+
+  start_pointcloud_intensity = IncludeLaunchDescription(
+    PythonLaunchDescriptionSource(os.path.join(
+      get_package_share_directory('pointcloud_intensity_converter'), 'launch', 'pointcloud_intensity_node.launch.py'))
+  )
+
   start_local_planner = IncludeLaunchDescription(
     FrontendLaunchDescriptionSource(os.path.join(
       get_package_share_directory('local_planner'), 'launch', 'local_planner.launch')
@@ -60,11 +77,11 @@ def generate_launch_description():
     )
   )
 
-  start_arise_slam = IncludeLaunchDescription(
-    PythonLaunchDescriptionSource(os.path.join(
-      get_package_share_directory('arise_slam_mid360'), 'launch', 'arize_slam.launch.py')
-    )
-  )
+#  start_arise_slam = IncludeLaunchDescription(
+#    PythonLaunchDescriptionSource(os.path.join(
+#      get_package_share_directory('arise_slam_mid360'), 'launch', 'arize_slam.launch.py')
+#    )
+#  )
 
   start_visualization_tools = IncludeLaunchDescription(
     FrontendLaunchDescriptionSource(os.path.join(
@@ -75,17 +92,17 @@ def generate_launch_description():
     }.items()
   )
 
-  start_joy = Node(
-    package='joy', 
-    executable='joy_node',
-    name='ps3_joy',
-    output='screen',
-    parameters=[{
-                'dev': "/dev/input/js0",
-                'deadzone': 0.12,
-                'autorepeat_rate': 0.0,
-  		}]
-  )
+#  start_joy = Node(
+#    package='joy', 
+#    executable='joy_node',
+#    name='ps3_joy',
+#    output='screen',
+#    parameters=[{
+#                'dev': "/dev/input/js0",
+#                'deadzone': 0.12,
+#                'autorepeat_rate': 0.0,
+#  		}]
+#  )
 
   start_far_planner = IncludeLaunchDescription(
     PythonLaunchDescriptionSource(
@@ -95,26 +112,29 @@ def generate_launch_description():
     }.items()
   )
 
-  start_mid360 = IncludeLaunchDescription(
-    PythonLaunchDescriptionSource(
-      [get_package_share_directory('livox_ros_driver2'), '/launch_ROS2/msg_MID360_launch.py']),
-  )
+#  start_mid360 = IncludeLaunchDescription(
+#    PythonLaunchDescriptionSource(
+#      [get_package_share_directory('livox_ros_driver2'), '/launch_ROS2/msg_MID360_launch.py']),
+#  )
 
-  start_theta = IncludeLaunchDescription(
-    FrontendLaunchDescriptionSource(os.path.join(
-      get_package_share_directory('receive_theta'), 'launch', 'receive_theta.launch')
-    )
-  )
+#  start_theta = IncludeLaunchDescription(
+#    FrontendLaunchDescriptionSource(os.path.join(
+#      get_package_share_directory('receive_theta'), 'launch', 'receive_theta.launch')
+#    )
+#  )
 
-  start_diablo_ctrl = Node(
-    package='diablo_ctrl',
-    executable='diablo_ctrl_node',
-    output='screen'
-  )
+#  start_diablo_ctrl = Node(
+#    package='diablo_ctrl',
+#    executable='diablo_ctrl_node',
+#    output='screen'
+#  )
 
   ld = LaunchDescription()
 
   # Add the actions
+  ld.add_action(start_ekf_localization)
+  ld.add_action(start_type_converter)   # new node to converte float64 to 32
+  ld.add_action(start_pointcloud_intensity)  # point cloud format converter
   ld.add_action(declare_route_planner_config)
   ld.add_action(declare_world_name)
   ld.add_action(declare_sensorOffsetX)
@@ -123,17 +143,16 @@ def generate_launch_description():
   ld.add_action(declare_vehicleX)
   ld.add_action(declare_vehicleY)
   ld.add_action(declare_checkTerrainConn)
-
   ld.add_action(start_local_planner)
   ld.add_action(start_terrain_analysis)
   ld.add_action(start_terrain_analysis_ext)
   ld.add_action(start_sensor_scan_generation)
-  ld.add_action(start_arise_slam)
-  ld.add_action(start_visualization_tools)
-  ld.add_action(start_joy)
+#  ld.add_action(start_arise_slam)
+#  ld.add_action(start_visualization_tools)
+#  ld.add_action(start_joy)
   ld.add_action(start_far_planner)
-  ld.add_action(start_theta)
-  ld.add_action(start_mid360)
-  ld.add_action(start_diablo_ctrl)
+#  ld.add_action(start_theta)
+#  ld.add_action(start_mid360)
+#  ld.add_action(start_diablo_ctrl)
 
   return ld

@@ -30,7 +30,7 @@ TeleopPanel::TeleopPanel( QWidget* parent )
 
   output_timer->start( 100 );
 
-  velocity_publisher_ = node_->create_publisher<sensor_msgs::msg::Joy>("/joy", 5);
+  velocity_publisher_ = node_->create_publisher<sensor_msgs::msg::Joy>("/tita4264886/joy", 5);
 
   drive_widget_->setEnabled( true );
 }
